@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+import uvicorn
 from app.schemas.investment import (
     InvestmentRequest, ParseRequest, ValidatorRequest
 )
@@ -96,3 +97,6 @@ async def calculate_index_returns(data: InvestmentRequest):
 def get_performance():
     """Reports system execution metrics: time, memory, and threads."""
     return PerformanceMonitor.get_system_metrics()
+if __name__ == "__main__":
+    # Explicitly binding to 0.0.0.0 allows the container to talk to the host
+    uvicorn.run(app, host="0.0.0.0", port=5477)
