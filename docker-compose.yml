@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    container_name: blk-hacking-ind-prijith-ayure
+    restart: always
+    environment:
+      POSTGRES_USER: prijith
+      POSTGRES_PASSWORD: securepassword
+      POSTGRES_DB: savings_db
+    ports:
+      - "5477:5477"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U prijith -d savings_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:  # This must be indented exactly like 'db'
+    build: .
+    container_name: blk-hacking-ind-prijith-ayure-api
+    restart: always
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://prijith:securepassword@db:5432/savings_db
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
